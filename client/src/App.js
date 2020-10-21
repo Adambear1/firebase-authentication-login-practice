@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import fireDB from "./config";
+import Hero from "./Hero";
+import Login from "./Login";
 function App() {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
@@ -36,6 +38,7 @@ function App() {
       });
   };
   const handleLogin = (e) => {
+    clearErrors()
     fireDB
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -57,14 +60,23 @@ function App() {
 
   const authListener = () => {
     fireDB.auth().onAuthStateChanged((user) => {
-      user ? setUser(user) : setUser("");
+      user ? {
+        setUser(user) 
+      }: setUser("");
     });
   };
 
   useEffect(() => {
     authListener();
   }, []);
-  return <div className="App"></div>;
+  return (<>
+  {user ?(
+    <Login email={email} setEmail={setEmail} password={password} setPassword={setPassword} handleLogin={handleLogin} handleLogout={handleLogout}setHasAccount={setHasAccount} emailError={emailError} passwordError={passwordError}/>
+  ) : (
+    <Hero handleLogout={handleLogout}/>
+  )}
+  
+  </>)
 }
 
 export default App;
